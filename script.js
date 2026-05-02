@@ -471,11 +471,20 @@ function preloadRemainingVideos() {
     }
   }
 
-function getDesignPageSize() {
-  return state.designTab === "graphic" || state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
-}
+  function getDesignPageSize() {
+    return state.designTab === "graphic" || state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
+  }
 
-function paginate(items, page, size = pageSize) {
+  function resetTouchMediaState() {
+    document.querySelectorAll(".flip-image.is-flipped").forEach((card) => card.classList.remove("is-flipped"));
+    document.querySelectorAll(".hover-video.is-playing").forEach((card) => {
+      if (typeof card.stopVideoPlayback === "function") {
+        card.stopVideoPlayback();
+      }
+    });
+  }
+  
+  function paginate(items, page, size = pageSize) {
   const start = page * size;
   return items.slice(start, start + size);
 }
@@ -658,7 +667,13 @@ function bindTapImageCards(scope = document) {
       if (!window.matchMedia("(hover: none)").matches) {
         return;
       }
-      card.classList.toggle("is-flipped");
+      const wasFlipped = card.classList.contains("is-flipped");
+      document.querySelectorAll(".flip-image.is-flipped").forEach((item) => {
+        if (item !== card) {
+          item.classList.remove("is-flipped");
+        }
+      });
+      card.classList.toggle("is-flipped", !wasFlipped);
     });
   });
 }
@@ -730,13 +745,18 @@ function bindTapImageCards(scope = document) {
         loadVideoElement(video, "auto");
       };
 
-        const playVideo = () => {
-          wantsPlayback = true;
-          loadVideo();
-          setLoading(video.readyState < 2);
-          startCountdown();
-          video.play().then(() => {
-            revealVideo();
+          const playVideo = () => {
+            wantsPlayback = true;
+            document.querySelectorAll(".hover-video.is-playing").forEach((playingCard) => {
+              if (playingCard !== card && typeof playingCard.stopVideoPlayback === "function") {
+                playingCard.stopVideoPlayback();
+              }
+            });
+            loadVideo();
+            setLoading(video.readyState < 2);
+            startCountdown();
+            video.play().then(() => {
+              revealVideo();
           }).catch(() => {
             if (wantsPlayback && video.readyState < 2) {
               setLoading(true);
@@ -751,10 +771,12 @@ function bindTapImageCards(scope = document) {
           video.currentTime = 0.08;
           }
           setLoading(false);
-          poster?.classList.remove("is-hidden");
-          stopCountdown();
-        };
+            poster?.classList.remove("is-hidden");
+            stopCountdown();
+          };
 
+          card.stopVideoPlayback = stopVideo;
+  
       const toggleVideo = (event) => {
         if (!isTouchMode()) {
           return;
@@ -836,48 +858,53 @@ document.querySelectorAll(".pager").forEach((pager) => {
     }
 
     const direction = button.dataset.action === "next" ? 1 : -1;
-    const gallery = pager.dataset.gallery;
-
-    if (gallery === "motion") {
-      state.motionPage += direction;
-      renderMotion();
-    }
-
-    if (gallery === "design") {
-      state.designPage += direction;
-      renderDesign();
-    }
+      const gallery = pager.dataset.gallery;
+  
+      if (gallery === "motion") {
+        resetTouchMediaState();
+        state.motionPage += direction;
+        renderMotion();
+      }
+  
+      if (gallery === "design") {
+        resetTouchMediaState();
+        state.designPage += direction;
+        renderDesign();
+      }
   });
 });
 
 document.querySelectorAll("[data-design-tab]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll("[data-design-tab]").forEach((item) => item.classList.remove("is-active"));
-    button.classList.add("is-active");
-    state.designTab = button.dataset.designTab;
-    state.designPage = 0;
-    renderDesign();
+      button.classList.add("is-active");
+      state.designTab = button.dataset.designTab;
+      state.designPage = 0;
+      resetTouchMediaState();
+      renderDesign();
+    });
   });
-});
 
 document.querySelectorAll("[data-motion-tab]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll("[data-motion-tab]").forEach((item) => item.classList.remove("is-active"));
-    button.classList.add("is-active");
-    state.motionTab = button.dataset.motionTab;
-    state.motionPage = 0;
-    renderMotion();
+      button.classList.add("is-active");
+      state.motionTab = button.dataset.motionTab;
+      state.motionPage = 0;
+      resetTouchMediaState();
+      renderMotion();
+    });
   });
-});
 
 document.querySelectorAll("[data-ai-tab]").forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelectorAll("[data-ai-tab]").forEach((item) => item.classList.remove("is-active"));
-    button.classList.add("is-active");
-    state.aiTab = button.dataset.aiTab;
-    renderAi();
+      document.querySelectorAll("[data-ai-tab]").forEach((item) => item.classList.remove("is-active"));
+      button.classList.add("is-active");
+      state.aiTab = button.dataset.aiTab;
+      resetTouchMediaState();
+      renderAi();
+    });
   });
-});
 
 const backToTopButton = document.querySelector(".back-to-top");
 

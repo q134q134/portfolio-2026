@@ -954,11 +954,11 @@ h1 {
   }
 
   .image-gallery.is-product .flip-image .media-frame {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: auto;
   }
 
   .image-gallery.is-product .flip-image .media-frame img {
-    height: 100%;
+    height: auto;
     object-fit: contain;
   }
 
@@ -1027,6 +1027,7 @@ h1 {
   }
 
   .image-gallery.is-graphic .media-frame,
+  .image-gallery.is-product .media-frame,
   .image-gallery.is-printer .media-frame,
   .image-gallery.is-culture .media-frame,
   .ai-card-grid .media-frame {
@@ -1035,6 +1036,7 @@ h1 {
   }
 
   .image-gallery.is-graphic .media-frame img,
+  .image-gallery.is-product .media-frame img,
   .image-gallery.is-printer .media-frame img,
   .image-gallery.is-culture .media-frame img,
   .ai-card-grid .media-frame img {
