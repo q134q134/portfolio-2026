@@ -389,8 +389,9 @@ h1 {
 
 .video-gallery .media-frame {
   min-height: 0;
-  aspect-ratio: auto;
+  aspect-ratio: 16 / 9;
   padding: 8px;
+  overflow: hidden;
 }
 
 .interaction-hint {
@@ -440,12 +441,38 @@ h1 {
 .hover-video.is-playing .video-countdown {
   opacity: 1;
 }
-.video-gallery .media-frame video {
-  width: 100%;
-  height: auto;
+.video-poster {
+  position: absolute;
+  inset: 8px;
+  z-index: 2;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  object-fit: contain;
+  background: #090b0e;
+  transition: opacity 160ms ease;
+}
+
+.video-poster.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.video-gallery .media-frame video,
+.ai-video-row .media-frame video {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
   max-height: none;
   object-fit: contain;
   padding: 0;
+  background: #090b0e;
+}
+
+.ai-video-row .media-frame {
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .image-gallery .media-frame,
@@ -793,5 +820,7 @@ h1 {
     color: var(--ink);
   }
 }
+
+
 
 

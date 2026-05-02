@@ -1,10 +1,17 @@
 ﻿const pageSize = 9;
 
+function getPosterSrc(src) {
+  const fileName = src.split("/").pop().replace(/\.mp4$/i, ".webp");
+  return `assets/posters/${fileName}`;
+}
+
 function createMotionItems(count, type, folder, prefix) {
   return Array.from({ length: count }, (_, index) => {
     const id = String(index + 1).padStart(2, "0");
+    const src = `assets/${folder}/${prefix}-${id}.mp4`;
     return {
-      src: `assets/${folder}/${prefix}-${id}.mp4`,
+      src,
+      posterSrc: getPosterSrc(src),
       title: `${type} ${id}`,
       type,
     };
@@ -80,12 +87,14 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");
   return {
     src: `assets/ai/ai-video-${id}.mp4`,
+    posterSrc: getPosterSrc(`assets/ai/ai-video-${id}.mp4`),
     title: `AI Video ${id}`,
     type: "AI Motion",
   };
 }).concat([
   {
     src: "assets/ai/享食尚remotion_01-2_男配音.mp4",
+    posterSrc: getPosterSrc("assets/ai/享食尚remotion_01-2_男配音.mp4"),
     title: "Remotion Video",
     type: "Remotion",
   },
@@ -107,7 +116,7 @@ const state = {
 };
 
 function createImageCard(item) {
-  const hoverImage = item.hoverSrc ? `<img class="hover-image" src="${item.hoverSrc}" alt="${item.title} alternate view" loading="lazy" />` : "";
+  const hoverImage = item.hoverSrc ? `<img class="hover-image" src="${item.hoverSrc}" alt="${item.title} alternate view" loading="lazy" decoding="async" />` : "";
   const moreHint = item.moreHint ? `<span class="image-more-hint">${item.moreHint}</span>` : "";
   const interactionHint = item.hoverSrc
     ? `<span class="interaction-hint" data-desktop-label="滑過切換" data-mobile-label="點擊切換">滑過切換</span>`
@@ -116,7 +125,7 @@ function createImageCard(item) {
   return `
     <article class="media-card${item.hoverSrc ? " flip-image" : ""}">
       <div class="media-frame">
-        <img class="base-image" src="${item.src}" alt="${item.title}" loading="lazy" />
+        <img class="base-image" src="${item.src}" alt="${item.title}" loading="eager" decoding="async" />
         ${hoverImage}
         ${moreHint}
         ${interactionHint}
@@ -140,7 +149,8 @@ function createVideoCard(item) {
   return `
     <article class="media-card hover-video">
       <div class="media-frame">
-        <video src="${item.src}" muted loop playsinline preload="metadata"></video>
+        <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
+        <video data-src="${item.src}" muted loop playsinline preload="none"></video>
         <span class="interaction-hint video-action-hint" data-desktop-label="滑過播放" data-mobile-label="點擊播放">滑過播放</span>
         <span class="video-countdown" aria-hidden="true">0秒</span>
       </div>
@@ -407,9 +417,10 @@ function bindTapImageCards(scope = document) {
   });
 }
 function bindHoverVideos(scope = document) {
-  scope.querySelectorAll(".hover-video video").forEach((video) => {
-    const card = video.closest(".hover-video");
-    const countdown = card?.querySelector(".video-countdown");
+  scope.querySelectorAll(".hover-video").forEach((card) => {
+    const video = card.querySelector("video");
+    const countdown = card.querySelector(".video-countdown");
+    const poster = card.querySelector(".video-poster");
     let countdownTimer = null;
 
     const getRemainingSeconds = () => {
@@ -437,28 +448,40 @@ function bindHoverVideos(scope = document) {
       updateCountdown();
       window.clearInterval(countdownTimer);
       countdownTimer = window.setInterval(updateCountdown, 250);
-      card?.classList.add("is-playing");
+      card.classList.add("is-playing");
     };
 
     const stopCountdown = () => {
       window.clearInterval(countdownTimer);
       countdownTimer = null;
-      card?.classList.remove("is-playing");
+      card.classList.remove("is-playing");
       updateCountdown();
     };
 
-    video.addEventListener("loadedmetadata", showPreviewFrame, { once: true });
-    video.addEventListener("loadeddata", showPreviewFrame, { once: true });
+    video.addEventListener("loadedmetadata", showPreviewFrame);
+    video.addEventListener("loadeddata", showPreviewFrame);
     video.addEventListener("timeupdate", updateCountdown);
 
+    const loadVideo = () => {
+      if (!video.getAttribute("src")) {
+        video.src = video.dataset.src;
+        video.load();
+      }
+    };
+
     const playVideo = () => {
+      loadVideo();
+      poster?.classList.add("is-hidden");
       startCountdown();
       video.play().catch(() => {});
     };
 
     const stopVideo = () => {
       video.pause();
-      video.currentTime = 0.08;
+      if (video.readyState > 0) {
+        video.currentTime = 0.08;
+      }
+      poster?.classList.remove("is-hidden");
       stopCountdown();
     };
 
@@ -474,11 +497,11 @@ function bindHoverVideos(scope = document) {
       }
     };
 
-    video.addEventListener("mouseenter", playVideo);
-    video.addEventListener("mouseleave", stopVideo);
-    video.addEventListener("focus", playVideo);
-    video.addEventListener("blur", stopVideo);
-    video.addEventListener("click", toggleVideo);
+    card.addEventListener("mouseenter", playVideo);
+    card.addEventListener("mouseleave", stopVideo);
+    card.addEventListener("focusin", playVideo);
+    card.addEventListener("focusout", stopVideo);
+    card.addEventListener("click", toggleVideo);
   });
 }
 
@@ -571,7 +594,7 @@ if (backToTopButton) {
 renderMotion();
 renderDesign();
 renderAi();
-preloadVideosInPriority();
+// Background video preload disabled so images render first.
 
 if (window.gsap) {
   gsap.set([".site-header", ".hero-copy > *", ".hero-portrait"], { autoAlpha: 0 });
@@ -605,6 +628,10 @@ if (window.gsap) {
 
   revealItems.forEach((item) => observer.observe(item));
 }
+
+
+
+
 
 
 
