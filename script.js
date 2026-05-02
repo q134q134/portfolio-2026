@@ -897,6 +897,26 @@ document.addEventListener("dragstart", (event) => {
   }
 });
 
+let longPressTimer = null;
+
+document.addEventListener("touchstart", (event) => {
+  if (!event.target.closest("img, video")) {
+    return;
+  }
+
+  longPressTimer = window.setTimeout(() => {
+    event.preventDefault();
+  }, 360);
+}, { passive: false });
+
+document.addEventListener("touchend", () => {
+  window.clearTimeout(longPressTimer);
+});
+
+document.addEventListener("touchmove", () => {
+  window.clearTimeout(longPressTimer);
+});
+
 renderMotion();
 renderDesign();
 renderAi();
