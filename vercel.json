@@ -38,7 +38,7 @@
   ],
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/(.*\\.mp4)",
       "headers": [
         {
           "key": "Cache-Control",
