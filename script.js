@@ -662,14 +662,15 @@ function bindTapImageCards(scope = document) {
     });
   });
 }
-function bindHoverVideos(scope = document) {
-    scope.querySelectorAll(".hover-video").forEach((card) => {
-      const video = card.querySelector("video");
-      const countdown = card.querySelector(".video-countdown");
-      const poster = card.querySelector(".video-poster");
-      const loading = card.querySelector(".video-loading");
-      let countdownTimer = null;
-      let wantsPlayback = false;
+  function bindHoverVideos(scope = document) {
+      scope.querySelectorAll(".hover-video").forEach((card) => {
+        const video = card.querySelector("video");
+        const countdown = card.querySelector(".video-countdown");
+        const poster = card.querySelector(".video-poster");
+        const loading = card.querySelector(".video-loading");
+        let countdownTimer = null;
+        let wantsPlayback = false;
+        const isTouchMode = () => window.matchMedia("(hover: none)").matches;
 
         const setLoading = (isLoading) => {
           loading?.classList.toggle("is-visible", isLoading);
@@ -754,23 +755,42 @@ function bindHoverVideos(scope = document) {
           stopCountdown();
         };
 
-    const toggleVideo = () => {
-      if (!window.matchMedia("(hover: none)").matches) {
-        return;
-      }
+      const toggleVideo = (event) => {
+        if (!isTouchMode()) {
+          return;
+        }
 
-      if (video.paused) {
-        playVideo();
-      } else {
-        stopVideo();
-      }
-    };
-
-      card.addEventListener("mouseenter", playVideo);
-      card.addEventListener("mouseleave", stopVideo);
-      card.addEventListener("focusin", playVideo);
-      card.addEventListener("focusout", stopVideo);
-      card.addEventListener("click", toggleVideo);
+        event.preventDefault();
+        event.stopPropagation();
+  
+        if (video.paused) {
+          playVideo();
+        } else {
+          stopVideo();
+        }
+      };
+  
+        card.addEventListener("mouseenter", () => {
+          if (!isTouchMode()) {
+            playVideo();
+          }
+        });
+        card.addEventListener("mouseleave", () => {
+          if (!isTouchMode()) {
+            stopVideo();
+          }
+        });
+        card.addEventListener("focusin", () => {
+          if (!isTouchMode()) {
+            playVideo();
+          }
+        });
+        card.addEventListener("focusout", () => {
+          if (!isTouchMode()) {
+            stopVideo();
+          }
+        });
+        card.addEventListener("click", toggleVideo);
         video.addEventListener("waiting", () => {
           if (wantsPlayback) {
             setLoading(true);

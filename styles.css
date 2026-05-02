@@ -426,6 +426,10 @@ h1 {
   background: var(--panel);
 }
 
+.hover-video {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .media-frame {
   position: relative;
   display: grid;
