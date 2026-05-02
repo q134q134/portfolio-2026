@@ -103,7 +103,7 @@ function createVideoCard(item) {
   return `
     <article class="media-card hover-video">
       <div class="media-frame">
-        <video data-src="${item.src}" muted loop playsinline preload="none"></video>
+        <video src="${item.src}" muted loop playsinline preload="metadata"></video>
       </div>
     </article>
   `;
@@ -256,21 +256,22 @@ function bindDraggableImages(scope = document) {
 
 function bindHoverVideos(scope = document) {
   scope.querySelectorAll(".hover-video video").forEach((video) => {
-    const loadVideo = () => {
-      if (!video.src) {
-        video.src = video.dataset.src;
-        video.load();
+    const showPreviewFrame = () => {
+      if (video.readyState > 0 && video.currentTime === 0) {
+        video.currentTime = 0.08;
       }
     };
 
+    video.addEventListener("loadedmetadata", showPreviewFrame, { once: true });
+    video.addEventListener("loadeddata", showPreviewFrame, { once: true });
+
     const playVideo = () => {
-      loadVideo();
       video.play().catch(() => {});
     };
 
     const stopVideo = () => {
       video.pause();
-      video.currentTime = 0;
+      video.currentTime = 0.08;
     };
 
     video.addEventListener("mouseenter", playVideo);
@@ -387,6 +388,7 @@ if (window.gsap) {
 
   revealItems.forEach((item) => observer.observe(item));
 }
+
 
 
 
