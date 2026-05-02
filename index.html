@@ -10,7 +10,17 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="is-preloading">
+    <div class="portfolio-loader" id="portfolioLoader" role="status" aria-live="polite" aria-label="作品載入中">
+      <div class="loader-panel">
+        <p class="loader-kicker">Portfolio 2020~</p>
+        <h2>作品載入中</h2>
+        <div class="loader-track" aria-hidden="true">
+          <span class="loader-bar" id="loaderBar"></span>
+        </div>
+        <p class="loader-percent" id="loaderPercent">0%</p>
+      </div>
+    </div>
     <div class="page-grid" aria-hidden="true"></div>
 
     <header class="site-header">

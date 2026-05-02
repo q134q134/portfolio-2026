@@ -115,6 +115,97 @@ const state = {
   aiTab: "3d",
 };
 
+function getAllImageSources() {
+  return [...new Set([
+    "assets/profile/portrait.webp",
+    ...motionSets.virtual.map((item) => item.posterSrc),
+    ...motionSets.animation.map((item) => item.posterSrc),
+    ...designSets.product.flatMap((item) => [item.src, item.hoverSrc]),
+    ...designSets.graphic.map((item) => item.src),
+    ...designSets.printer.flatMap((item) => [item.src, item.hoverSrc]),
+    ...designSets.culture.flatMap((item) => [item.src, item.hoverSrc]),
+    ...aiCards.map((item) => item.src),
+    ...aiVideos.map((item) => item.posterSrc),
+    ...ai3dItems.map((item) => item.src),
+  ].filter(Boolean))];
+}
+
+function updatePageLoader(completed, total) {
+  const loaderBar = document.querySelector("#loaderBar");
+  const loaderPercent = document.querySelector("#loaderPercent");
+  const percent = total ? Math.min(100, Math.round((completed / total) * 100)) : 100;
+
+  if (loaderBar) {
+    loaderBar.style.width = `${percent}%`;
+  }
+
+  if (loaderPercent) {
+    loaderPercent.textContent = `${percent}%`;
+  }
+}
+
+function loadImageAsset(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = resolve;
+    image.onerror = resolve;
+    image.src = src;
+  });
+}
+
+function loadVideoAsset(src) {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    let isDone = false;
+    const done = () => {
+      if (isDone) {
+        return;
+      }
+      isDone = true;
+      video.oncanplaythrough = null;
+      video.onloadeddata = null;
+      video.onerror = null;
+      video.src = "";
+      video.load();
+      resolve();
+    };
+
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.oncanplaythrough = done;
+    video.onloadeddata = done;
+    video.onerror = done;
+    video.src = src;
+    video.load();
+  });
+}
+
+async function waitForFullPortfolioLoad() {
+  const loader = document.querySelector("#portfolioLoader");
+  const imageSources = getAllImageSources();
+  const videoSources = getAllVideoSources();
+  const sources = [
+    ...imageSources.map((src) => ({ type: "image", src })),
+    ...videoSources.map((src) => ({ type: "video", src })),
+  ];
+  let completed = 0;
+
+  updatePageLoader(0, sources.length);
+
+  await Promise.all(sources.map((asset) => {
+    const loadTask = asset.type === "video" ? loadVideoAsset(asset.src) : loadImageAsset(asset.src);
+    return loadTask.then(() => {
+      completed += 1;
+      updatePageLoader(completed, sources.length);
+    });
+  }));
+
+  updatePageLoader(sources.length, sources.length);
+  loader?.classList.add("is-done");
+  document.body.classList.remove("is-preloading");
+}
+
 function createImageCard(item) {
   const hoverImage = item.hoverSrc ? `<img class="hover-image" src="${item.hoverSrc}" alt="${item.title} alternate view" loading="lazy" decoding="async" />` : "";
   const moreHint = item.moreHint ? `<span class="image-more-hint">${item.moreHint}</span>` : "";
@@ -704,6 +795,7 @@ renderMotion();
 renderDesign();
 renderAi();
 preloadDesignImages();
+waitForFullPortfolioLoad();
 // Background video preload disabled so images render first.
 
 if (window.gsap) {
