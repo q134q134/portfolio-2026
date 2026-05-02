@@ -939,6 +939,38 @@ h1 {
     padding: 0;
   }
 
+  .image-gallery .flip-image .media-frame {
+    display: grid;
+    align-items: start;
+  }
+
+  .image-gallery .flip-image .media-frame img {
+    grid-area: 1 / 1;
+    align-self: start;
+    width: 100%;
+    height: auto;
+  }
+
+  .image-gallery.is-product .flip-image .media-frame {
+    aspect-ratio: 3 / 4;
+  }
+
+  .image-gallery.is-product .flip-image .media-frame img {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .image-gallery.is-printer .flip-image .media-frame,
+  .image-gallery.is-culture .flip-image .media-frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .image-gallery.is-printer .flip-image .media-frame img,
+  .image-gallery.is-culture .flip-image .media-frame img {
+    height: 100%;
+    object-fit: contain;
+  }
+
   .image-gallery.is-product .media-frame,
   .image-gallery.is-graphic .media-frame,
   .image-gallery.is-printer .media-frame,
@@ -953,6 +985,13 @@ h1 {
   .ai-3d-grid .pan-card .pan-image {
     width: 100%;
     height: auto;
+  }
+
+  .hero-portrait img,
+  .profile-card img {
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
   }
 
   .site-footer,
