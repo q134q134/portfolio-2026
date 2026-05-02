@@ -238,7 +238,7 @@ async function loadAssetQueue(assets, concurrency, onProgress) {
 async function waitForFullPortfolioLoad() {
   const loader = document.querySelector("#portfolioLoader");
   const imageSources = getAllImageSources();
-  const videoSources = getAllVideoSources();
+  const videoSources = getInitialVideoSources();
   const imageAssets = imageSources.map((src) => ({ type: "image", src }));
   const videoAssets = videoSources.map((src) => ({ type: "video", src }));
   const totalAssets = imageAssets.length + videoAssets.length;
@@ -263,6 +263,7 @@ async function waitForFullPortfolioLoad() {
   });
   loader?.classList.add("is-done");
   document.body.classList.remove("is-preloading");
+  window.setTimeout(preloadRemainingVideos, 700);
 }
 
 function createImageCard(item) {
@@ -317,6 +318,13 @@ function getAllVideoSources() {
   ])];
 }
 
+function getInitialVideoSources() {
+  return [...new Set([
+    ...motionSets.virtual.slice(0, motionPageSize * 2).map((item) => item.src),
+    ...aiVideos.map((item) => item.src),
+  ])];
+}
+
   function getVisibleVideoSources() {
     return [...document.querySelectorAll(".hover-video video")]
       .map((video) => video.dataset.src || video.currentSrc || video.src)
@@ -351,7 +359,8 @@ function preloadRemainingVideos() {
   }
 
   const visibleSources = new Set(getVisibleVideoSources());
-  const remainingSources = getAllVideoSources().filter((src) => !visibleSources.has(new URL(src, window.location.href).href) && !visibleSources.has(src));
+  const initialSources = new Set(getInitialVideoSources());
+  const remainingSources = getAllVideoSources().filter((src) => !initialSources.has(src) && !visibleSources.has(new URL(src, window.location.href).href) && !visibleSources.has(src));
   if (!remainingSources.length) {
     return;
   }
