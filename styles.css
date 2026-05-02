@@ -620,6 +620,8 @@ h1 {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   display: block;
+  cursor: grab;
+  touch-action: none;
 }
 
 .ai-3d-grid .media-frame img {
@@ -646,6 +648,10 @@ h1 {
 }
 
 .pan-card.is-dragging {
+  cursor: grabbing;
+}
+
+.pan-card.is-dragging .media-frame {
   cursor: grabbing;
 }
 

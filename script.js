@@ -304,33 +304,36 @@ function renderAi() {
   animateCards(grid);
 }
 
-function bindDraggableImages(scope = document) {
-  scope.querySelectorAll(".pan-card").forEach((card) => {
-    const image = card.querySelector(".pan-image");
-    const verticalOnly = Boolean(card.closest(".ai-3d-grid"));
-    const scale = verticalOnly ? 1 : 1.35;
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
+  function bindDraggableImages(scope = document) {
+    scope.querySelectorAll(".pan-card").forEach((card) => {
+      const image = card.querySelector(".pan-image");
+      const frame = card.querySelector(".media-frame");
+      const verticalOnly = Boolean(card.closest(".ai-3d-grid"));
+      const scale = verticalOnly ? 1 : 1.35;
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
     let currentX = 0;
     let currentY = 0;
     let minX = 0;
     let maxX = 0;
     let minY = 0;
-    let maxY = 0;
-
-    function updateBounds() {
-      const frame = card.querySelector(".media-frame");
-      const frameRect = frame.getBoundingClientRect();
-      const imageRatio = image.naturalWidth / image.naturalHeight;
-
-      if (verticalOnly) {
-        const renderedHeight = frameRect.width / imageRatio;
-        minX = 0;
-        maxX = 0;
-        maxY = 0;
-        minY = Math.min(0, frameRect.height - renderedHeight);
-        currentX = 0;
+      let maxY = 0;
+  
+      function updateBounds() {
+        const frameRect = frame.getBoundingClientRect();
+        const imageRect = image.getBoundingClientRect();
+        const imageRatio = image.naturalWidth && image.naturalHeight
+          ? image.naturalWidth / image.naturalHeight
+          : Math.max(0.01, imageRect.width / Math.max(1, imageRect.height));
+  
+        if (verticalOnly) {
+          const renderedHeight = Math.max(imageRect.height, frameRect.width / imageRatio);
+          minX = 0;
+          maxX = 0;
+          maxY = 0;
+          minY = Math.min(0, frameRect.height - renderedHeight);
+          currentX = 0;
         currentY = Math.max(minY, Math.min(maxY, currentY));
         return;
       }
@@ -364,40 +367,49 @@ function bindDraggableImages(scope = document) {
       updateBounds();
       applyTransform();
     });
-    if (image.complete) {
-      updateBounds();
-      applyTransform();
-    }
-
-    card.addEventListener("pointerdown", (event) => {
-      updateBounds();
-      isDragging = true;
-      startX = event.clientX - currentX;
-      startY = event.clientY - currentY;
-      card.classList.add("is-dragging");
-      card.setPointerCapture(event.pointerId);
-    });
-
-    card.addEventListener("pointermove", (event) => {
-      if (!isDragging) {
-        return;
+      if (image.complete) {
+        updateBounds();
+        applyTransform();
       }
-
-      currentX = verticalOnly ? 0 : Math.max(minX, Math.min(maxX, event.clientX - startX));
-      currentY = Math.max(minY, Math.min(maxY, event.clientY - startY));
-      applyTransform();
-    });
-
-    card.addEventListener("pointerup", (event) => {
-      isDragging = false;
-      card.classList.remove("is-dragging");
-      card.releasePointerCapture(event.pointerId);
-    });
-
-    card.addEventListener("pointerleave", () => {
-      isDragging = false;
-      card.classList.remove("is-dragging");
-    });
+  
+      function startDrag(event) {
+        updateBounds();
+        if (minX === maxX && minY === maxY) {
+          return;
+        }
+        isDragging = true;
+        startX = event.clientX - currentX;
+        startY = event.clientY - currentY;
+        card.classList.add("is-dragging");
+        frame.setPointerCapture(event.pointerId);
+      }
+  
+      function moveDrag(event) {
+        if (!isDragging) {
+          return;
+        }
+  
+        currentX = verticalOnly ? 0 : Math.max(minX, Math.min(maxX, event.clientX - startX));
+        currentY = Math.max(minY, Math.min(maxY, event.clientY - startY));
+        applyTransform();
+      }
+  
+      function stopDrag(event) {
+        isDragging = false;
+        card.classList.remove("is-dragging");
+        if (frame.hasPointerCapture(event.pointerId)) {
+          frame.releasePointerCapture(event.pointerId);
+        }
+      }
+  
+      frame.addEventListener("pointerdown", startDrag);
+      frame.addEventListener("pointermove", moveDrag);
+      frame.addEventListener("pointerup", stopDrag);
+      frame.addEventListener("pointercancel", stopDrag);
+      frame.addEventListener("pointerleave", () => {
+        isDragging = false;
+        card.classList.remove("is-dragging");
+      });
 
     window.addEventListener("resize", () => {
       updateBounds();
