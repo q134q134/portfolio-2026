@@ -266,6 +266,51 @@ function preloadRemainingVideos() {
     }
   }
 
+  function preloadImageSources(sources, batchSize = 8) {
+    const uniqueSources = [...new Set(sources.filter(Boolean))];
+    let index = 0;
+
+    const loadNextBatch = () => {
+      const batch = uniqueSources.slice(index, index + batchSize);
+      index += batch.length;
+
+      batch.forEach((src) => {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = src;
+      });
+
+      if (index < uniqueSources.length) {
+        window.setTimeout(loadNextBatch, 160);
+      }
+    };
+
+    loadNextBatch();
+  }
+
+  function preloadDesignImages() {
+    const orderedItems = [
+      ...designSets.product,
+      ...designSets.culture,
+      ...designSets.graphic,
+      ...designSets.printer,
+    ];
+    const baseSources = orderedItems.map((item) => item.src);
+    const hoverSources = orderedItems.map((item) => item.hoverSrc);
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => {
+        preloadImageSources(baseSources);
+        window.setTimeout(() => preloadImageSources(hoverSources), 900);
+      }, { timeout: 1800 });
+    } else {
+      window.setTimeout(() => {
+        preloadImageSources(baseSources);
+        window.setTimeout(() => preloadImageSources(hoverSources), 900);
+      }, 1000);
+    }
+  }
+
 function getDesignPageSize() {
   return state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
 }
@@ -632,6 +677,7 @@ if (backToTopButton) {
 renderMotion();
 renderDesign();
 renderAi();
+preloadDesignImages();
 // Background video preload disabled so images render first.
 
 if (window.gsap) {
