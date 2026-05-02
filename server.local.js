@@ -1,4 +1,4 @@
-const http = require("http");
+﻿const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
@@ -13,6 +13,7 @@ const types = {
   ".js": "text/javascript; charset=utf-8",
   ".mp4": "video/mp4",
   ".png": "image/png",
+  ".webp": "image/webp",
 };
 
 const server = http.createServer((req, res) => {
@@ -44,3 +45,4 @@ const server = http.createServer((req, res) => {
 server.listen(port, () => {
   console.log(`Portfolio server running at http://localhost:${port}/`);
 });
+
