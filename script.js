@@ -166,9 +166,11 @@ function getAllVideoSources() {
   ])];
 }
 
-function getVisibleVideoSources() {
-  return [...document.querySelectorAll(".hover-video video")].map((video) => video.currentSrc || video.src).filter(Boolean);
-}
+  function getVisibleVideoSources() {
+    return [...document.querySelectorAll(".hover-video video")]
+      .map((video) => video.dataset.src || video.currentSrc || video.src)
+      .filter(Boolean);
+  }
 
 function waitForVisibleVideos() {
   const videos = [...document.querySelectorAll(".hover-video video")];
@@ -233,11 +235,36 @@ function preloadRemainingVideos() {
   loadNext();
 }
 
-function preloadVideosInPriority() {
-  waitForVisibleVideos().then(() => {
-    window.setTimeout(preloadRemainingVideos, 600);
-  });
-}
+  function preloadVideosInPriority() {
+    waitForVisibleVideos().then(() => {
+      window.setTimeout(preloadRemainingVideos, 600);
+    });
+  }
+
+  function loadVideoElement(video, preload = "auto") {
+    if (!video || !video.dataset.src) {
+      return;
+    }
+
+    video.preload = preload;
+    if (!video.getAttribute("src")) {
+      video.src = video.dataset.src;
+    }
+    video.load();
+  }
+
+  function preloadVisibleVideos(scope = document) {
+    const videos = [...scope.querySelectorAll(".hover-video video")];
+    const loadBatch = () => {
+      videos.forEach((video) => loadVideoElement(video, "auto"));
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(loadBatch, { timeout: 1400 });
+    } else {
+      window.setTimeout(loadBatch, 700);
+    }
+  }
 
 function getDesignPageSize() {
   return state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
@@ -255,11 +282,12 @@ function renderMotion() {
   const pageTotal = Math.ceil(items.length / pageSize);
 
   state.motionPage = Math.max(0, Math.min(state.motionPage, pageTotal - 1));
-  grid.innerHTML = paginate(items, state.motionPage).map(createVideoCard).join("");
-  pageLabel.textContent = `${state.motionPage + 1} / ${pageTotal}`;
-  bindHoverVideos(grid);
-  animateCards(grid);
-}
+    grid.innerHTML = paginate(items, state.motionPage).map(createVideoCard).join("");
+    pageLabel.textContent = `${state.motionPage + 1} / ${pageTotal}`;
+    bindHoverVideos(grid);
+    preloadVisibleVideos(grid);
+    animateCards(grid);
+  }
 
 function renderDesign() {
   const grid = document.querySelector("#designGrid");
@@ -295,11 +323,12 @@ function renderAi() {
     bindTapImageCards(grid);
   }
 
-  if (state.aiTab === "motion") {
-    grid.classList.add("ai-video-row");
-    grid.innerHTML = aiVideos.map(createVideoCard).join("");
-    bindHoverVideos(grid);
-  }
+    if (state.aiTab === "motion") {
+      grid.classList.add("ai-video-row");
+      grid.innerHTML = aiVideos.map(createVideoCard).join("");
+      bindHoverVideos(grid);
+      preloadVisibleVideos(grid);
+    }
 
   animateCards(grid);
 }
@@ -474,12 +503,9 @@ function bindHoverVideos(scope = document) {
     video.addEventListener("loadeddata", showPreviewFrame);
     video.addEventListener("timeupdate", updateCountdown);
 
-    const loadVideo = () => {
-      if (!video.getAttribute("src")) {
-        video.src = video.dataset.src;
-        video.load();
-      }
-    };
+      const loadVideo = () => {
+        loadVideoElement(video, "auto");
+      };
 
     const playVideo = () => {
       loadVideo();
