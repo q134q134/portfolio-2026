@@ -150,13 +150,14 @@ function createVideoCard(item) {
     <article class="media-card hover-video">
       <div class="media-frame">
         <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
-        <video data-src="${item.src}" muted loop playsinline preload="none"></video>
-        <span class="interaction-hint video-action-hint" data-desktop-label="滑過播放" data-mobile-label="點擊播放">滑過播放</span>
-        <span class="video-countdown" aria-hidden="true">0秒</span>
-      </div>
-    </article>
-  `;
-}
+          <video data-src="${item.src}" muted loop playsinline preload="none"></video>
+          <span class="interaction-hint video-action-hint" data-desktop-label="滑過播放" data-mobile-label="點擊播放">滑過播放</span>
+          <span class="video-loading" aria-hidden="true">讀取中</span>
+          <span class="video-countdown" aria-hidden="true">0秒</span>
+        </div>
+      </article>
+    `;
+  }
 
 function getAllVideoSources() {
   return [...new Set([
@@ -503,11 +504,18 @@ function bindTapImageCards(scope = document) {
   });
 }
 function bindHoverVideos(scope = document) {
-  scope.querySelectorAll(".hover-video").forEach((card) => {
-    const video = card.querySelector("video");
-    const countdown = card.querySelector(".video-countdown");
-    const poster = card.querySelector(".video-poster");
-    let countdownTimer = null;
+    scope.querySelectorAll(".hover-video").forEach((card) => {
+      const video = card.querySelector("video");
+      const countdown = card.querySelector(".video-countdown");
+      const poster = card.querySelector(".video-poster");
+      const loading = card.querySelector(".video-loading");
+      let countdownTimer = null;
+      let wantsPlayback = false;
+
+      const setLoading = (isLoading) => {
+        loading?.classList.toggle("is-visible", isLoading);
+        card.classList.toggle("is-loading", isLoading);
+      };
 
     const getRemainingSeconds = () => {
       if (!Number.isFinite(video.duration) || video.duration <= 0) {
@@ -523,12 +531,13 @@ function bindHoverVideos(scope = document) {
       countdown.textContent = `${getRemainingSeconds()}秒`;
     };
 
-    const showPreviewFrame = () => {
-      if (video.readyState > 0 && video.currentTime === 0) {
-        video.currentTime = 0.08;
-      }
-      updateCountdown();
-    };
+      const showPreviewFrame = () => {
+        if (video.readyState > 0 && video.currentTime === 0) {
+          video.currentTime = 0.08;
+        }
+        setLoading(false);
+        updateCountdown();
+      };
 
     const startCountdown = () => {
       updateCountdown();
@@ -552,21 +561,31 @@ function bindHoverVideos(scope = document) {
         loadVideoElement(video, "auto");
       };
 
-    const playVideo = () => {
-      loadVideo();
-      poster?.classList.add("is-hidden");
-      startCountdown();
-      video.play().catch(() => {});
-    };
-
-    const stopVideo = () => {
-      video.pause();
-      if (video.readyState > 0) {
-        video.currentTime = 0.08;
-      }
-      poster?.classList.remove("is-hidden");
-      stopCountdown();
-    };
+      const playVideo = () => {
+        wantsPlayback = true;
+        loadVideo();
+        setLoading(video.readyState < 2);
+        poster?.classList.add("is-hidden");
+        startCountdown();
+        video.play().then(() => {
+          setLoading(false);
+        }).catch(() => {
+          if (wantsPlayback && video.readyState < 2) {
+            setLoading(true);
+          }
+        });
+      };
+  
+      const stopVideo = () => {
+        wantsPlayback = false;
+        video.pause();
+        if (video.readyState > 0) {
+          video.currentTime = 0.08;
+        }
+        setLoading(false);
+        poster?.classList.remove("is-hidden");
+        stopCountdown();
+      };
 
     const toggleVideo = () => {
       if (!window.matchMedia("(hover: none)").matches) {
@@ -580,13 +599,20 @@ function bindHoverVideos(scope = document) {
       }
     };
 
-    card.addEventListener("mouseenter", playVideo);
-    card.addEventListener("mouseleave", stopVideo);
-    card.addEventListener("focusin", playVideo);
-    card.addEventListener("focusout", stopVideo);
-    card.addEventListener("click", toggleVideo);
-  });
-}
+      card.addEventListener("mouseenter", playVideo);
+      card.addEventListener("mouseleave", stopVideo);
+      card.addEventListener("focusin", playVideo);
+      card.addEventListener("focusout", stopVideo);
+      card.addEventListener("click", toggleVideo);
+      video.addEventListener("waiting", () => {
+        if (wantsPlayback) {
+          setLoading(true);
+        }
+      });
+      video.addEventListener("canplay", () => setLoading(false));
+      video.addEventListener("playing", () => setLoading(false));
+    });
+  }
 
 function animateCards(scope) {
   const cards = scope.querySelectorAll(".media-card");

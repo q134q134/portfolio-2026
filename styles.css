@@ -441,6 +441,46 @@ h1 {
 .hover-video.is-playing .video-countdown {
   opacity: 1;
 }
+
+.video-loading {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  background: rgba(15, 17, 20, 0.86);
+  color: var(--ink);
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 160ms ease;
+}
+
+.video-loading::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border: 2px solid rgba(243, 239, 230, 0.35);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 720ms linear infinite;
+}
+
+.video-loading.is-visible {
+  opacity: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .video-poster {
   position: absolute;
   inset: 8px;
