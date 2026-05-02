@@ -28,6 +28,15 @@ body {
   color: var(--ink);
   font-family: Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   line-height: 1.55;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img,
+video {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body.is-preloading {

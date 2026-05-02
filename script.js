@@ -858,6 +858,16 @@ if (backToTopButton) {
   });
 }
 
+document.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
+
+document.addEventListener("dragstart", (event) => {
+  if (event.target.closest("img, video")) {
+    event.preventDefault();
+  }
+});
+
 renderMotion();
 renderDesign();
 renderAi();
