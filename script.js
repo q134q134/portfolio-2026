@@ -107,8 +107,8 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
   };
 }).concat([
   {
-    src: "assets/ai/享食尚remotion_01-2_男配音.mp4",
-    posterSrc: getPosterSrc("assets/ai/享食尚remotion_01-2_男配音.mp4"),
+    src: "assets/ai/remotion-voice.mp4",
+    posterSrc: getPosterSrc("assets/ai/remotion-voice.mp4"),
     title: "Remotion Video",
     type: "Remotion",
   },
@@ -116,7 +116,7 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
 
 const ai3dItems = [
   {
-    src: "assets/ai/算圖.webp",
+    src: "assets/ai/ai-3d-render.webp",
     title: "AI 3D Image",
     type: "3D",
   },
@@ -158,20 +158,30 @@ function updatePageLoader(completed, total) {
   }
 }
 
-function loadImageAsset(src) {
+function loadImageAsset(src, attempt = 1) {
   return new Promise((resolve) => {
     const image = new Image();
-    image.onload = resolve;
-    image.onerror = resolve;
+    image.onload = () => resolve(true);
+    image.onerror = () => {
+      if (attempt < 3) {
+        window.setTimeout(() => {
+          loadImageAsset(src, attempt + 1).then(resolve);
+        }, 280 * attempt);
+        return;
+      }
+
+      console.warn(`Image failed to load: ${src}`);
+      resolve(false);
+    };
     image.src = src;
   });
 }
 
-function loadVideoAsset(src) {
+function loadVideoAsset(src, attempt = 1) {
   return new Promise((resolve) => {
     const video = document.createElement("video");
     let isDone = false;
-    const done = () => {
+    const done = (isLoaded = true) => {
       if (isDone) {
         return;
       }
@@ -181,41 +191,70 @@ function loadVideoAsset(src) {
       video.onerror = null;
       video.src = "";
       video.load();
-      resolve();
+      resolve(isLoaded);
     };
+    const retry = () => {
+      if (attempt < 2) {
+        window.setTimeout(() => {
+          loadVideoAsset(src, attempt + 1).then(resolve);
+        }, 650);
+        return;
+      }
 
+      console.warn(`Video failed to preload: ${src}`);
+      done(false);
+    };
+  
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
-    video.oncanplaythrough = done;
-    video.onloadeddata = done;
-    video.onerror = done;
+    video.oncanplaythrough = () => done(true);
+    video.onloadeddata = () => done(true);
+    video.onerror = retry;
     video.src = src;
     video.load();
   });
+}
+
+async function loadAssetQueue(assets, concurrency, onProgress) {
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < assets.length) {
+      const asset = assets[nextIndex];
+      nextIndex += 1;
+      if (asset.type === "video") {
+        await loadVideoAsset(asset.src);
+      } else {
+        await loadImageAsset(asset.src);
+      }
+      onProgress();
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, assets.length) }, worker));
 }
 
 async function waitForFullPortfolioLoad() {
   const loader = document.querySelector("#portfolioLoader");
   const imageSources = getAllImageSources();
   const videoSources = getAllVideoSources();
-  const sources = [
-    ...imageSources.map((src) => ({ type: "image", src })),
-    ...videoSources.map((src) => ({ type: "video", src })),
-  ];
+  const imageAssets = imageSources.map((src) => ({ type: "image", src }));
+  const videoAssets = videoSources.map((src) => ({ type: "video", src }));
+  const totalAssets = imageAssets.length + videoAssets.length;
   let completed = 0;
+  
+  updatePageLoader(0, totalAssets);
+  
+  const onProgress = () => {
+    completed += 1;
+    updatePageLoader(completed, totalAssets);
+  };
 
-  updatePageLoader(0, sources.length);
-
-  await Promise.all(sources.map((asset) => {
-    const loadTask = asset.type === "video" ? loadVideoAsset(asset.src) : loadImageAsset(asset.src);
-    return loadTask.then(() => {
-      completed += 1;
-      updatePageLoader(completed, sources.length);
-    });
-  }));
-
-  updatePageLoader(sources.length, sources.length);
+  await loadAssetQueue(imageAssets, 8, onProgress);
+  await loadAssetQueue(videoAssets, 2, onProgress);
+  
+  updatePageLoader(totalAssets, totalAssets);
   document.querySelectorAll(".hover-video video").forEach((video) => {
     loadVideoElement(video, "auto");
     if (video.readyState > 0 && video.currentTime === 0) {
