@@ -1,0 +1,32 @@
+# Blender 4.0.2 MTL File: 'Baby Horse_skOK.blend'
+# www.blender.org
+
+newmtl nawatobi_u1_v1.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/gltf_embedded_0.jpeg
+
+newmtl tripo_mat_811aecfa-8d66-45b2-a1e0-e01c6283adc8.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd C:/tripo_node_02323f48-3873-4b64-b0cc-d9a3c6430420_BaseColor.jpg
+
+newmtl 材質
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.055000 0.055000 0.055000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/texture01.png
