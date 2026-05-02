@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #0f1114;
   --panel: #171a1f;
   --panel-soft: #20242a;
@@ -647,3 +647,4 @@ h1 {
     flex-direction: column;
   }
 }
+

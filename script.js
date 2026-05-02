@@ -1,37 +1,37 @@
-const pageSize = 9;
+﻿const pageSize = 9;
 
 function createMotionItems(count, type, folder, prefix) {
   return Array.from({ length: count }, (_, index) => {
-  const id = String(index + 1).padStart(2, "0");
-  return {
-    src: `assets/${folder}/${prefix}-${id}.mp4`,
-    title: `${type} ${id}`,
+    const id = String(index + 1).padStart(2, "0");
+    return {
+      src: `assets/${folder}/${prefix}-${id}.mp4`,
+      title: `${type} ${id}`,
       type,
-  };
-});
+    };
+  });
 }
 
 const motionSets = {
-  virtual: createMotionItems(24, "虛擬景", "motion", "virtual"),
-  animation: createMotionItems(9, "動畫作品", "Animation", "animation"),
+  virtual: createMotionItems(24, "Virtual", "motion", "virtual"),
+  animation: createMotionItems(9, "Animation", "Animation", "animation"),
 };
 
 const designSets = {
   product: Array.from({ length: 27 }, (_, index) => {
     const group = 27 - index;
     return {
-      src: `assets/product/${group}-2.jpg`,
-      hoverSrc: `assets/product/${group}-1.jpg`,
-      title: `商品設計 ${group}`,
-      type: "商品設計",
+      src: `assets/product/${group}-2.webp`,
+      hoverSrc: `assets/product/${group}-1.webp`,
+      title: `Product ${group}`,
+      type: "Product",
     };
   }),
   graphic: Array.from({ length: 29 }, (_, index) => {
     const id = String(index + 1).padStart(2, "0");
     return {
-      src: `assets/graphic/graphic-${id}.jpg`,
-      title: `平面設計 ${id}`,
-      type: "平面設計",
+      src: `assets/graphic/graphic-${id}.webp`,
+      title: `Graphic ${id}`,
+      type: "Graphic",
     };
   }),
 };
@@ -39,9 +39,9 @@ const designSets = {
 const aiCards = Array.from({ length: 10 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");
   return {
-    src: `assets/ai/ai-card-${id}.jpg`,
-    title: `AI 生成通路卡 ${id}`,
-    type: "AI 生成圖像",
+    src: `assets/ai/ai-card-${id}.webp`,
+    title: `AI Card ${id}`,
+    type: "AI Static",
   };
 });
 
@@ -49,25 +49,24 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");
   return {
     src: `assets/ai/ai-video-${id}.mp4`,
-    title: ["AI 應用 Bluseeds", "AI 享食尚男配音", "AI 動態片頭"][index],
-    type: "AI 影片應用",
+    title: `AI Video ${id}`,
+    type: "AI Motion",
   };
 }).concat([
   {
     src: "assets/ai/享食尚remotion_01-2_男配音.mp4",
-    title: "Remotion 動態輔助",
+    title: "Remotion Video",
     type: "Remotion",
   },
 ]);
 
 const ai3dItems = [
   {
-    src: "assets/ai/算圖.jpg",
-    title: "AI 3D 算圖",
+    src: "assets/ai/算圖.webp",
+    title: "AI 3D Image",
     type: "3D",
   },
 ];
-
 const state = {
   motionPage: 0,
   motionTab: "virtual",
@@ -77,7 +76,7 @@ const state = {
 };
 
 function createImageCard(item) {
-  const hoverImage = item.hoverSrc ? `<img class="hover-image" src="${item.hoverSrc}" alt="${item.title} 正面" loading="lazy" />` : "";
+  const hoverImage = item.hoverSrc ? `<img class="hover-image" src="${item.hoverSrc}" alt="${item.title} 甇?" loading="lazy" />` : "";
 
   return `
     <article class="media-card${item.hoverSrc ? " flip-image" : ""}">
@@ -94,7 +93,7 @@ function createDraggableImageCard(item) {
     <article class="media-card pan-card">
       <div class="media-frame">
         <img class="pan-image" src="${item.src}" alt="${item.title}" loading="lazy" draggable="false" />
-        <span class="pan-hint">拖曳查看</span>
+        <span class="pan-hint">??亦?</span>
       </div>
     </article>
   `;
@@ -104,7 +103,7 @@ function createVideoCard(item) {
   return `
     <article class="media-card hover-video">
       <div class="media-frame">
-        <video src="${item.src}" muted loop playsinline preload="metadata"></video>
+        <video data-src="${item.src}" muted loop playsinline preload="none"></video>
       </div>
     </article>
   `;
@@ -257,20 +256,27 @@ function bindDraggableImages(scope = document) {
 
 function bindHoverVideos(scope = document) {
   scope.querySelectorAll(".hover-video video").forEach((video) => {
-    video.addEventListener("mouseenter", () => {
+    const loadVideo = () => {
+      if (!video.src) {
+        video.src = video.dataset.src;
+        video.load();
+      }
+    };
+
+    const playVideo = () => {
+      loadVideo();
       video.play().catch(() => {});
-    });
-    video.addEventListener("mouseleave", () => {
+    };
+
+    const stopVideo = () => {
       video.pause();
       video.currentTime = 0;
-    });
-    video.addEventListener("focus", () => {
-      video.play().catch(() => {});
-    });
-    video.addEventListener("blur", () => {
-      video.pause();
-      video.currentTime = 0;
-    });
+    };
+
+    video.addEventListener("mouseenter", playVideo);
+    video.addEventListener("mouseleave", stopVideo);
+    video.addEventListener("focus", playVideo);
+    video.addEventListener("blur", stopVideo);
   });
 }
 
@@ -381,3 +387,9 @@ if (window.gsap) {
 
   revealItems.forEach((item) => observer.observe(item));
 }
+
+
+
+
+
+
