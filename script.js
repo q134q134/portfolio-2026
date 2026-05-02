@@ -103,10 +103,42 @@ function createVideoCard(item) {
   return `
     <article class="media-card hover-video">
       <div class="media-frame">
-        <video src="${item.src}" muted loop playsinline preload="metadata"></video>
+        <video src="${item.src}" muted loop playsinline preload="auto"></video>
       </div>
     </article>
   `;
+}
+
+function getAllVideoSources() {
+  return [...new Set([
+    ...motionSets.virtual.map((item) => item.src),
+    ...motionSets.animation.map((item) => item.src),
+    ...aiVideos.map((item) => item.src),
+  ])];
+}
+
+function preloadAllVideos() {
+  const existing = document.querySelector("#videoPreloadPool");
+  if (existing) {
+    return;
+  }
+
+  const pool = document.createElement("div");
+  pool.id = "videoPreloadPool";
+  pool.setAttribute("aria-hidden", "true");
+  pool.style.cssText = "position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;";
+
+  getAllVideoSources().forEach((src) => {
+    const video = document.createElement("video");
+    video.src = src;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    pool.appendChild(video);
+  });
+
+  document.body.appendChild(pool);
 }
 
 function paginate(items, page) {
@@ -355,6 +387,7 @@ if (backToTopButton) {
 renderMotion();
 renderDesign();
 renderAi();
+preloadAllVideos();
 
 if (window.gsap) {
   gsap.set([".site-header", ".hero-copy > *", ".hero-portrait"], { autoAlpha: 0 });
@@ -388,6 +421,7 @@ if (window.gsap) {
 
   revealItems.forEach((item) => observer.observe(item));
 }
+
 
 
 
