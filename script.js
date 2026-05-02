@@ -1,5 +1,7 @@
 ﻿const pageSize = 9;
 
+const motionPageSize = 4;
+
 function getPosterSrc(src) {
   const fileName = src.split("/").pop().replace(/\.mp4$/i, ".webp");
   return `assets/posters/${fileName}`;
@@ -43,6 +45,18 @@ const cacpItems = [
 
   return item;
 });
+
+const graphicOrder = [
+  5, 6, 3, 29,
+  1, 2, 4, 7,
+  8, 9, 10, 11,
+  12, 13, 14, 15,
+  16, 17, 18, 19,
+  20, 21, 22, 23,
+  24, 25, 26, 27,
+  28,
+];
+
 const designSets = {
   product: Array.from({ length: 27 }, (_, index) => {
     const group = 27 - index;
@@ -53,8 +67,8 @@ const designSets = {
       type: "Product",
     };
   }),
-  graphic: Array.from({ length: 29 }, (_, index) => {
-    const id = String(index + 1).padStart(2, "0");
+  graphic: graphicOrder.map((number) => {
+    const id = String(number).padStart(2, "0");
     return {
       src: `assets/graphic/graphic-${id}.webp`,
       title: `Graphic ${id}`,
@@ -410,7 +424,7 @@ function preloadRemainingVideos() {
   }
 
 function getDesignPageSize() {
-  return state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
+  return state.designTab === "graphic" || state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
 }
 
 function paginate(items, page, size = pageSize) {
@@ -422,10 +436,10 @@ function renderMotion() {
   const grid = document.querySelector("#motionGrid");
   const pageLabel = document.querySelector("#motionPage");
   const items = motionSets[state.motionTab];
-  const pageTotal = Math.ceil(items.length / pageSize);
+  const pageTotal = Math.ceil(items.length / motionPageSize);
 
   state.motionPage = Math.max(0, Math.min(state.motionPage, pageTotal - 1));
-    grid.innerHTML = paginate(items, state.motionPage).map(createVideoCard).join("");
+    grid.innerHTML = paginate(items, state.motionPage, motionPageSize).map(createVideoCard).join("");
     pageLabel.textContent = `${state.motionPage + 1} / ${pageTotal}`;
     bindHoverVideos(grid);
     preloadVisibleVideos(grid);

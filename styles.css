@@ -407,6 +407,10 @@ h1 {
   gap: 14px;
 }
 
+.video-gallery {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .media-card {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -591,6 +595,14 @@ h1 {
 
 .image-gallery.is-printer {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.image-gallery.is-graphic {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.image-gallery.is-graphic .media-frame {
+  aspect-ratio: 4 / 3;
 }
 
 .image-gallery.is-printer .media-frame {
