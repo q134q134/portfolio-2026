@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "three": "^0.184.0"
+  },
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1"
+  }
+}
