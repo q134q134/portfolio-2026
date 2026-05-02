@@ -93,7 +93,7 @@ function createDraggableImageCard(item) {
     <article class="media-card pan-card">
       <div class="media-frame">
         <img class="pan-image" src="${item.src}" alt="${item.title}" loading="lazy" draggable="false" />
-        <span class="pan-hint">??亦?</span>
+        <span class="pan-hint">拖曳查看</span>
       </div>
     </article>
   `;
@@ -388,6 +388,7 @@ if (window.gsap) {
 
   revealItems.forEach((item) => observer.observe(item));
 }
+
 
 
 
