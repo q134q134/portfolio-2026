@@ -472,6 +472,10 @@ function preloadRemainingVideos() {
   }
 
   function getDesignPageSize() {
+    if (window.matchMedia("(hover: none)").matches && state.designTab === "product") {
+      return 3;
+    }
+
     return state.designTab === "graphic" || state.designTab === "printer" || state.designTab === "culture" ? 4 : pageSize;
   }
 
