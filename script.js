@@ -2,6 +2,10 @@
 
 const motionPageSize = 4;
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 function getPosterSrc(src) {
   const fileName = src.split("/").pop().replace(/\.mp4$/i, ".webp");
   return `assets/posters/${fileName}`;
@@ -237,6 +241,7 @@ async function loadAssetQueue(assets, concurrency, onProgress) {
 
 async function waitForFullPortfolioLoad() {
   const loader = document.querySelector("#portfolioLoader");
+  window.scrollTo(0, 0);
   const imageSources = getAllImageSources();
   const videoSources = getInitialVideoSources();
   const imageAssets = imageSources.map((src) => ({ type: "image", src }));
@@ -261,8 +266,10 @@ async function waitForFullPortfolioLoad() {
       video.currentTime = 0.08;
     }
   });
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   loader?.classList.add("is-done");
   document.body.classList.remove("is-preloading");
+  window.setTimeout(() => window.scrollTo(0, 0), 60);
   window.setTimeout(preloadRemainingVideos, 700);
 }
 
