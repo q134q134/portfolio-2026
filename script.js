@@ -7,26 +7,82 @@ if ("scrollRestoration" in history) {
 }
 
 function getPosterSrc(src) {
-  const fileName = src.split("/").pop().replace(/\.mp4$/i, ".webp");
+  const baseName = src.split("/").pop().replace(/\.mp4$/i, "");
+  const fileName = `${baseName}.webp`;
   return `assets/posters/${fileName}`;
 }
 
+const youtubeVideos = {
+  "virtual-01": "X0SqxaO72TE",
+  "virtual-02": "OYEOi81iqPw",
+  "virtual-03": "shkCmUdHepM",
+  "virtual-04": "wCXoFLxoTpQ",
+  "virtual-05": "RiEzSlQVJxo",
+  "virtual-06": "M52livem948",
+  "virtual-07": "-AlSMgrEeHw",
+  "virtual-08": "OC3zLK7eVJY",
+  "virtual-09": "WQhICZCqfMQ",
+  "virtual-10": "jlML4ek_c70",
+  "virtual-11": "L7AiKXi0YD4",
+  "virtual-12": "nKD8QTjskZQ",
+  "virtual-13": "5AJEhWRODPo",
+  "virtual-14": "tN-3w8fLIts",
+  "virtual-15": "KFtF8b06oZA",
+  "virtual-16": "d_gluCNVKgI",
+  "virtual-17": "7r-fYZc4BZA",
+  "virtual-18": "Rf9urBezHwY",
+  "virtual-19": "m1htiUCxK2Q",
+  "virtual-20": "l6VHmNvAOx4",
+  "virtual-21": "T7K-UgjIJOI",
+  "virtual-22": "62oX7LCYESw",
+  "virtual-23": "Q-JANOSSJqo",
+  "virtual-24": "k36aBdM8HNc",
+  "animation-01": "bMmnovqF2eM",
+  "animation-02": "OGM2-xSMoLw",
+  "animation-03": "SClnTOs2pPo",
+  "animation-04": "aTUWfrKJ9VU",
+  "animation-05": "fEyzb-Jy7Js",
+  "animation-06": "rIvvXfBVS_M",
+  "animation-07": "WM7BiC3P6L4",
+  "animation-08": "qCWN0hnvhQ0",
+  "animation-09": "PEdx5465-ko",
+  "animation-10": "3OUZluXER6c",
+  "animation-11": "Rcs4MqCm_rA",
+  "animation-12": "mymxYGv-eLA",
+  "animation-13": "Luvi1K8h_aw",
+  "animation-14": "lmVY8wrs0Ls",
+  "animation-15": "DRNVUSwcw4k",
+  "animation-16": "wlX9LjNGHY0",
+  "animation-17": "T_DJb6QMMbI",
+  "animation-18": "rx-_2Xgt6PI",
+  "animation-19": "Zt8ueuBNZ4U",
+  "animation-20": "4Xzrxt0BSeU",
+  "animation-21": "oWi6xZJbIxY",
+  "animation-22": "t-IZczfLVII",
+  "ai-video-01": "zP812wop0Hs",
+  "ai-video-02": "EOv4GblRy0E",
+  "ai-video-03": "gqW4SvEClaY",
+  "remotion-voice": "-UAQpiIwGjY",
+};
+
 function createMotionItems(count, type, folder, prefix) {
   return Array.from({ length: count }, (_, index) => {
-    const id = String(index + 1).padStart(2, "0");
-    const src = `assets/${folder}/${prefix}-${id}.mp4`;
-    return {
-      src,
-      posterSrc: getPosterSrc(src),
-      title: `${type} ${id}`,
-      type,
-    };
-  });
-}
+      const id = String(index + 1).padStart(2, "0");
+      const key = `${prefix}-${id}`;
+      const src = `assets/${folder}/${prefix}-${id}.mp4`;
+      return {
+        src,
+        posterSrc: getPosterSrc(src),
+        youtubeId: youtubeVideos[key],
+        title: `${type} ${id}`,
+        type,
+      };
+    });
+  }
 
 const motionSets = {
   virtual: createMotionItems(24, "Virtual", "motion", "virtual"),
-  animation: createMotionItems(9, "Animation", "Animation", "animation"),
+  animation: createMotionItems(22, "Animation", "Animation", "animation"),
 };
 
 const cacpItems = [
@@ -106,6 +162,7 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
   return {
     src: `assets/ai/ai-video-${id}.mp4`,
     posterSrc: getPosterSrc(`assets/ai/ai-video-${id}.mp4`),
+    youtubeId: youtubeVideos[`ai-video-${id}`],
     title: `AI Video ${id}`,
     type: "AI Motion",
   };
@@ -113,6 +170,7 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
   {
     src: "assets/ai/remotion-voice.mp4",
     posterSrc: getPosterSrc("assets/ai/remotion-voice.mp4"),
+    youtubeId: youtubeVideos["remotion-voice"],
     title: "Remotion Video",
     type: "Remotion",
   },
@@ -304,6 +362,19 @@ function createDraggableImageCard(item) {
 }
 
 function createVideoCard(item) {
+  if (item.youtubeId) {
+    return `
+      <article class="media-card youtube-video">
+        <div class="media-frame">
+          <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
+          <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}">
+            播放
+          </button>
+        </div>
+      </article>
+    `;
+  }
+
   return `
     <article class="media-card hover-video">
       <div class="media-frame">
@@ -319,16 +390,16 @@ function createVideoCard(item) {
 
 function getAllVideoSources() {
   return [...new Set([
-    ...motionSets.virtual.map((item) => item.src),
-    ...motionSets.animation.map((item) => item.src),
-    ...aiVideos.map((item) => item.src),
+    ...motionSets.virtual.filter((item) => !item.youtubeId).map((item) => item.src),
+    ...motionSets.animation.filter((item) => !item.youtubeId).map((item) => item.src),
+    ...aiVideos.filter((item) => !item.youtubeId).map((item) => item.src),
   ])];
 }
 
 function getInitialVideoSources() {
   return [...new Set([
-    ...motionSets.virtual.slice(0, motionPageSize * 2).map((item) => item.src),
-    ...aiVideos.map((item) => item.src),
+    ...motionSets.virtual.slice(0, motionPageSize * 2).filter((item) => !item.youtubeId).map((item) => item.src),
+    ...aiVideos.filter((item) => !item.youtubeId).map((item) => item.src),
   ])];
 }
 
@@ -493,6 +564,21 @@ function preloadRemainingVideos() {
         card.stopVideoPlayback();
       }
     });
+    document.querySelectorAll(".youtube-video.is-playing").forEach((card) => {
+      const videoId = card.querySelector(".youtube-frame")?.src.match(/embed\/([^?]+)/)?.[1];
+      const item = videoId ? [...motionSets.animation, ...motionSets.virtual, ...aiVideos].find((entry) => entry.youtubeId === videoId) : null;
+      card.classList.remove("is-playing");
+      if (!item) {
+        return;
+      }
+      card.querySelector(".media-frame").innerHTML = `
+        <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
+        <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}">
+          播放
+        </button>
+      `;
+      bindYouTubeVideos(card);
+    });
   }
   
   function paginate(items, page, size = pageSize) {
@@ -509,10 +595,11 @@ function renderMotion() {
   state.motionPage = Math.max(0, Math.min(state.motionPage, pageTotal - 1));
     grid.innerHTML = paginate(items, state.motionPage, motionPageSize).map(createVideoCard).join("");
     pageLabel.textContent = `${state.motionPage + 1} / ${pageTotal}`;
-    bindHoverVideos(grid);
-    preloadVisibleVideos(grid);
-    animateCards(grid);
-  }
+      bindHoverVideos(grid);
+      bindYouTubeVideos(grid);
+      preloadVisibleVideos(grid);
+      animateCards(grid);
+    }
 
 function renderDesign() {
   const grid = document.querySelector("#designGrid");
@@ -549,11 +636,12 @@ function renderAi() {
   }
 
     if (state.aiTab === "motion") {
-      grid.classList.add("ai-video-row");
-      grid.innerHTML = aiVideos.map(createVideoCard).join("");
-      bindHoverVideos(grid);
-      preloadVisibleVideos(grid);
-    }
+        grid.classList.add("ai-video-row");
+        grid.innerHTML = aiVideos.map(createVideoCard).join("");
+        bindHoverVideos(grid);
+        bindYouTubeVideos(grid);
+        preloadVisibleVideos(grid);
+      }
 
   animateCards(grid);
 }
@@ -688,6 +776,37 @@ function bindTapImageCards(scope = document) {
     });
   });
 }
+
+function bindYouTubeVideos(scope = document) {
+  const cards = scope.matches?.(".youtube-video") ? [scope] : [...scope.querySelectorAll(".youtube-video")];
+  cards.forEach((card) => {
+    const button = card.querySelector(".youtube-play");
+    const frame = card.querySelector(".media-frame");
+    if (!button || !frame) {
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      resetTouchMediaState();
+      const videoId = button.dataset.youtubeId;
+      frame.innerHTML = `
+        <iframe
+          class="youtube-frame"
+          src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&playsinline=1"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+        <a class="youtube-fallback" href="https://www.youtube.com/watch?v=${videoId}" target="_blank" rel="noopener noreferrer">
+          前往 YouTube 觀看
+        </a>
+      `;
+      card.classList.add("is-playing");
+    });
+  });
+}
+
   function bindHoverVideos(scope = document) {
       scope.querySelectorAll(".hover-video").forEach((card) => {
         const video = card.querySelector("video");
