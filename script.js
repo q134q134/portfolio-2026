@@ -188,7 +188,7 @@ const state = {
   motionTab: "virtual",
   designPage: 0,
   designTab: "graphic",
-  aiTab: "3d",
+  aiTab: "motion",
 };
 
 function getAllImageSources() {
@@ -367,9 +367,7 @@ function createVideoCard(item) {
       <article class="media-card youtube-video">
         <div class="media-frame">
           <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
-          <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}">
-            播放
-          </button>
+          <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}"></button>
         </div>
       </article>
     `;
@@ -573,9 +571,7 @@ function preloadRemainingVideos() {
       }
       card.querySelector(".media-frame").innerHTML = `
         <img class="video-poster" src="${item.posterSrc}" alt="${item.title} preview" loading="eager" decoding="async" />
-        <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}">
-          播放
-        </button>
+        <button class="youtube-play" type="button" data-youtube-id="${item.youtubeId}" aria-label="播放 ${item.title}"></button>
       `;
       bindYouTubeVideos(card);
     });

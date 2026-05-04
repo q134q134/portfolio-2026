@@ -609,18 +609,35 @@ h1 {
   left: 50%;
   bottom: 12px;
   z-index: 5;
-  min-width: 66px;
-  padding: 7px 12px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
   border: 1px solid var(--line);
+  border-radius: 50%;
   background: rgba(15, 17, 20, 0.86);
   color: var(--ink);
   cursor: pointer;
+  transform: translateX(-50%);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.youtube-play::before {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid currentColor;
 }
 
 .youtube-play:hover {
   border-color: #fb4339;
   background: #fb4339;
   color: #101114;
+  transform: translateX(-50%) scale(1.06);
 }
 
 .youtube-fallback {
