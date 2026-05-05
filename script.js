@@ -1083,9 +1083,9 @@ if (window.gsap) {
     .timeline({ defaults: { ease: "power3.out" } })
     .to(".site-header", { autoAlpha: 1, duration: 0.45 })
     .fromTo(".hero-copy > *", { y: 30 }, { autoAlpha: 1, y: 0, duration: 0.82, stagger: 0.08 }, "-=0.1")
-    .fromTo(".hero-portrait", { y: 34, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.9 }, "-=0.62");
+    .fromTo(".hero-portrait", { y: 24 }, { autoAlpha: 1, y: 0, duration: 0.72 }, "-=0.46");
 
-  const revealItems = document.querySelectorAll(".section-heading, .profile-card, .profile-content, .ai-copy");
+  const revealItems = document.querySelectorAll(".section-heading, .profile-content, .ai-copy");
   gsap.set(revealItems, { autoAlpha: 0, y: 26 });
 
   const observer = new IntersectionObserver(
