@@ -37,6 +37,7 @@ const youtubeVideos = {
   "virtual-22": "62oX7LCYESw",
   "virtual-23": "Q-JANOSSJqo",
   "virtual-24": "k36aBdM8HNc",
+  "virtual-25": "pnKifl-dnOA",
   "animation-01": "bMmnovqF2eM",
   "animation-02": "OGM2-xSMoLw",
   "animation-03": "SClnTOs2pPo",
@@ -81,7 +82,7 @@ function createMotionItems(count, type, folder, prefix) {
   }
 
 const motionSets = {
-  virtual: createMotionItems(24, "Virtual", "motion", "virtual"),
+  virtual: createMotionItems(25, "Virtual", "motion", "virtual"),
   animation: createMotionItems(22, "Animation", "Animation", "animation"),
 };
 
