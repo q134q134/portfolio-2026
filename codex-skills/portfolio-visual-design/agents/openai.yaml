@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portfolio Visual Design"
+  short_description: "Build and maintain Hsieh Chih-Cheng style portfolio sites."
+  default_prompt: "Use this skill to design or update a dark editorial visual designer portfolio with non-cropped media, YouTube-backed video cards, mobile-friendly interactions, and Vercel publishing guidance."
