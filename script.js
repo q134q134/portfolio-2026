@@ -60,6 +60,12 @@ const youtubeVideos = {
   "animation-20": "4Xzrxt0BSeU",
   "animation-21": "oWi6xZJbIxY",
   "animation-22": "t-IZczfLVII",
+  "animation-23": "pb6bAm0sQBE",
+  "animation-24": "cze30hcTzng",
+  "animation-25": "E5jNpvAzpuQ",
+  "animation-26": "juv0bEMq6X4",
+  "animation-27": "HYP6Sb_7cI4",
+  "animation-28": "TOr3g-a-b7w",
   "ai-video-01": "zP812wop0Hs",
   "ai-video-02": "EOv4GblRy0E",
   "ai-video-03": "gqW4SvEClaY",
@@ -83,7 +89,7 @@ function createMotionItems(count, type, folder, prefix) {
 
 const motionSets = {
   virtual: createMotionItems(25, "Virtual", "motion", "virtual"),
-  animation: createMotionItems(22, "Animation", "Animation", "animation"),
+  animation: createMotionItems(28, "Animation", "Animation", "animation"),
 };
 
 const cacpItems = [
