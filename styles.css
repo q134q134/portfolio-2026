@@ -676,7 +676,18 @@ h1 {
 }
 
 .image-gallery.is-graphic .media-frame {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: auto;
+  min-height: 0;
+  padding: 8px;
+  align-items: start;
+}
+
+.image-gallery.is-graphic .media-frame img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  padding: 0;
 }
 
 .image-gallery.is-printer .media-frame {
