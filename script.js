@@ -191,6 +191,13 @@ const ai3dItems = [
     type: "3D",
   },
 ];
+const workflowItems = [
+  {
+    src: "assets/workflow/workflow-01.webp",
+    title: "喇叭口白生成器",
+    type: "AI Workflow",
+  },
+];
 const state = {
   motionPage: 0,
   motionTab: "virtual",
@@ -211,6 +218,7 @@ function getAllImageSources() {
     ...aiCards.map((item) => item.src),
     ...aiVideos.map((item) => item.posterSrc),
     ...ai3dItems.map((item) => item.src),
+    ...workflowItems.map((item) => item.src),
   ].filter(Boolean))];
 }
 
@@ -1040,6 +1048,48 @@ document.querySelectorAll("[data-ai-tab]").forEach((button) => {
     });
   });
 
+
+const lightbox = document.querySelector("#imageLightbox");
+const lightboxImage = document.querySelector("#lightboxImage");
+
+function openLightbox(src, alt) {
+  if (!lightbox || !lightboxImage) {
+    return;
+  }
+
+  lightboxImage.src = src;
+  lightboxImage.alt = alt || "放大圖片";
+  lightbox.setAttribute("aria-hidden", "false");
+  document.body.classList.add("is-lightbox-open");
+  lightbox.querySelector("[data-lightbox-close]")?.focus();
+}
+
+function closeLightbox() {
+  if (!lightbox || !lightboxImage) {
+    return;
+  }
+
+  lightbox.setAttribute("aria-hidden", "true");
+  lightboxImage.removeAttribute("src");
+  lightboxImage.alt = "";
+  document.body.classList.remove("is-lightbox-open");
+}
+
+document.querySelectorAll(".workflow-lightbox-trigger").forEach((button) => {
+  button.addEventListener("click", () => {
+    openLightbox(button.dataset.lightboxSrc, button.dataset.lightboxAlt);
+  });
+});
+
+document.querySelectorAll("[data-lightbox-close]").forEach((button) => {
+  button.addEventListener("click", closeLightbox);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && lightbox?.getAttribute("aria-hidden") === "false") {
+    closeLightbox();
+  }
+});
 const backToTopButton = document.querySelector(".back-to-top");
 
 if (backToTopButton) {

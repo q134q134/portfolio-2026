@@ -790,6 +790,104 @@ h1 {
   border-left: 2px solid var(--accent);
 }
 
+.workflow-section {
+  background: linear-gradient(180deg, rgba(125, 167, 199, 0.08), rgba(15, 17, 20, 0));
+}
+
+.workflow-gallery {
+  display: grid;
+  gap: 14px;
+}
+
+.workflow-card .media-frame {
+  align-items: start;
+  aspect-ratio: auto;
+  min-height: 0;
+  padding: 8px;
+}
+
+.workflow-card .media-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  padding: 0;
+}
+.workflow-lightbox-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.workflow-lightbox-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 40px);
+}
+
+.image-lightbox[aria-hidden="true"] {
+  display: none;
+}
+
+.image-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(5, 6, 8, 0.88);
+  cursor: zoom-out;
+}
+
+.image-lightbox-panel {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 94vw);
+  max-height: calc(100vh - 72px);
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #101114;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.image-lightbox-panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.image-lightbox-close {
+  position: sticky;
+  top: 12px;
+  float: right;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 12px 12px -54px 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(16, 17, 20, 0.82);
+  color: var(--text);
+  cursor: pointer;
+}
+
+body.is-lightbox-open {
+  overflow: hidden;
+}
 .ai-card-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

@@ -7,9 +7,9 @@
     <title>謝治成｜2020~ 作品集</title>
     <meta
       name="description"
-      content="謝治成個人作品集，收錄視覺設計、動態影像、虛擬場景、商品設計與 AI 協作內容。"
+      content="謝治成個人作品集，收錄視覺設計、動態影像、虛擬場景、商品設計、AI 協作內容與 AI 流程落地實作。"
     />
-    <link rel="stylesheet" href="styles.css?v=20260504-youtube-ai" />
+    <link rel="stylesheet" href="styles.css?v=20260608-lightbox" />
   </head>
   <body class="is-preloading">
     <div class="portfolio-loader" id="portfolioLoader" role="status" aria-live="polite" aria-label="作品載入中">
@@ -30,6 +30,7 @@
         <a href="#motion">虛擬景 / 動畫</a>
         <a href="#design">平面 / 商品</a>
         <a href="#ai">AI 協作</a>
+        <a href="#workflow">AI 流程</a>
       </nav>
     </header>
 
@@ -46,6 +47,7 @@
             <a href="#motion">02 虛擬景、動畫作品</a>
             <a href="#design">03 商品設計作品與平面設計</a>
             <a href="#ai">04 AI 協作內容</a>
+            <a href="#workflow">05 AI 流程落地實作</a>
           </div>
         </div>
         <figure class="hero-portrait">
@@ -206,6 +208,40 @@
           </div>
         </div>
       </section>
+      <section class="section workflow-section" id="workflow" aria-labelledby="workflow-title">
+        <div class="section-kicker">05</div>
+        <div class="section-heading">
+          <p class="eyebrow">AI 導入實務案例</p>
+          <h2 id="workflow-title">AI 流程落地實作。</h2>
+        </div>
+
+        <div class="ai-layout workflow-layout">
+          <div class="ai-copy workflow-copy">
+            <p>
+              整理過往將 AI 導入實際製作與工作流程的案例，包含內部工具原型、內容改寫流程、視覺製作分析、智慧派單與績效目標輔助提案。這些案例著重於問題拆解、流程規劃、工具導入與效率改善，呈現 AI 如何從概念轉化為可執行的工作方法。
+            </p>
+            <ul>
+              <li>喇叭口白生成器：將新聞喇叭口白圖卡的逐張製作流程，轉換為可批次輸出的內部工具原型</li>
+            </ul>
+          </div>
+
+          <div class="workflow-gallery">
+            <article class="media-card workflow-card">
+              <div class="media-frame">
+                <button
+                  class="workflow-lightbox-trigger"
+                  type="button"
+                  data-lightbox-src="assets/workflow/workflow-01.webp"
+                  data-lightbox-alt="喇叭口白生成器流程案例"
+                  aria-label="放大檢視喇叭口白生成器流程案例"
+                >
+                  <img src="assets/workflow/workflow-01.webp" alt="喇叭口白生成器流程案例" loading="eager" decoding="async" />
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -214,9 +250,16 @@
     </footer>
 
     <button class="back-to-top" type="button" aria-label="回到網頁最上方">↑</button>
+    <div class="image-lightbox" id="imageLightbox" aria-hidden="true">
+      <button class="image-lightbox-backdrop" type="button" data-lightbox-close aria-label="關閉放大圖片"></button>
+      <div class="image-lightbox-panel" role="dialog" aria-modal="true" aria-label="放大圖片檢視">
+        <button class="image-lightbox-close" type="button" data-lightbox-close aria-label="關閉放大圖片">×</button>
+        <img id="lightboxImage" src="" alt="" />
+      </div>
+    </div>
 
     <script src="assets/vendor/gsap.min.js"></script>
-    <script src="script.js?v=20260504-youtube-ai"></script>
+    <script src="script.js?v=20260608-lightbox"></script>
   </body>
 </html>
 
