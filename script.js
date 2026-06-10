@@ -113,17 +113,7 @@ const cacpItems = [
   return item;
 });
 
-const graphicOrder = [
-  8, 9, 3, 32,
-  1, 2, 4, 10,
-  11, 12, 13, 14,
-  15, 16, 17, 18,
-  19, 20, 21, 22,
-  23, 24, 25, 26,
-  27, 28, 29, 30,
-  31,
-  5, 6, 7,
-];
+const graphicOrder = Array.from({ length: 28 }, (_, index) => index + 1);
 
 const designSets = {
   product: Array.from({ length: 27 }, (_, index) => {
