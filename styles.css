@@ -799,6 +799,10 @@ h1 {
   gap: 14px;
 }
 
+.workflow-card[hidden] {
+  display: none;
+}
+
 .workflow-card .media-frame {
   align-items: start;
   aspect-ratio: auto;

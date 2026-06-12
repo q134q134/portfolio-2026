@@ -187,6 +187,11 @@ const workflowItems = [
     title: "喇叭口白生成器",
     type: "AI Workflow",
   },
+  {
+    src: "assets/workflow/workflow-02.webp",
+    title: "E-E-A-T 網頁改寫流程",
+    type: "AI Workflow",
+  },
 ];
 const state = {
   motionPage: 0,
@@ -194,6 +199,7 @@ const state = {
   designPage: 0,
   designTab: "graphic",
   aiTab: "motion",
+  workflowPage: 0,
 };
 
 function getAllImageSources() {
@@ -621,6 +627,20 @@ function renderDesign() {
   animateCards(grid);
 }
 
+function renderWorkflow() {
+  const cards = Array.from(document.querySelectorAll("[data-workflow-card]"));
+  const pageLabel = document.querySelector("#workflowPage");
+  const pageTotal = cards.length || 1;
+
+  state.workflowPage = Math.max(0, Math.min(state.workflowPage, pageTotal - 1));
+  cards.forEach((card, index) => {
+    card.hidden = index !== state.workflowPage;
+  });
+
+  if (pageLabel) {
+    pageLabel.textContent = `${state.workflowPage + 1} / ${pageTotal}`;
+  }
+}
 function renderAi() {
   const grid = document.querySelector("#aiGrid");
   grid.className = "";
@@ -998,6 +1018,11 @@ document.querySelectorAll(".pager").forEach((pager) => {
         renderMotion();
       }
   
+      if (gallery === "workflow") {
+        state.workflowPage += direction;
+        renderWorkflow();
+      }
+
       if (gallery === "design") {
         resetTouchMediaState();
         state.designPage += direction;
@@ -1121,6 +1146,7 @@ document.addEventListener("touchmove", () => {
 renderMotion();
 renderDesign();
 renderAi();
+renderWorkflow();
 preloadDesignImages();
 waitForFullPortfolioLoad();
 // Background video preload disabled so images render first.

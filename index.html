@@ -9,7 +9,7 @@
       name="description"
       content="謝治成個人作品集，收錄視覺設計、動態影像、虛擬場景、商品設計、AI 協作內容與 AI 流程落地實作。"
     />
-    <link rel="stylesheet" href="styles.css?v=20260608-lightbox" />
+    <link rel="stylesheet" href="styles.css?v=20260612-workflow-pager" />
   </head>
   <body class="is-preloading">
     <div class="portfolio-loader" id="portfolioLoader" role="status" aria-live="polite" aria-label="作品載入中">
@@ -222,11 +222,12 @@
             </p>
             <ul>
               <li>喇叭口白生成器：將新聞喇叭口白圖卡的逐張製作流程，轉換為可批次輸出的內部工具原型</li>
+              <li>E-E-A-T 網頁改寫流程：運用 AI 協助內容架構重整、重點提煉與改寫方向規劃</li>
             </ul>
           </div>
 
           <div class="workflow-gallery">
-            <article class="media-card workflow-card">
+            <article class="media-card workflow-card" data-workflow-card>
               <div class="media-frame">
                 <button
                   class="workflow-lightbox-trigger"
@@ -239,6 +240,24 @@
                 </button>
               </div>
             </article>
+            <article class="media-card workflow-card" data-workflow-card>
+              <div class="media-frame">
+                <button
+                  class="workflow-lightbox-trigger"
+                  type="button"
+                  data-lightbox-src="assets/workflow/workflow-02.webp"
+                  data-lightbox-alt="E-E-A-T 網頁改寫流程案例"
+                  aria-label="放大檢視 E-E-A-T 網頁改寫流程案例"
+                >
+                  <img src="assets/workflow/workflow-02.webp" alt="E-E-A-T 網頁改寫流程案例" loading="eager" decoding="async" />
+                </button>
+              </div>
+            </article>
+          </div>
+          <div class="pager" data-gallery="workflow">
+            <button type="button" data-action="prev">上一頁</button>
+            <span id="workflowPage">1 / 1</span>
+            <button type="button" data-action="next">下一頁</button>
           </div>
         </div>
       </section>
@@ -259,7 +278,7 @@
     </div>
 
     <script src="assets/vendor/gsap.min.js"></script>
-    <script src="script.js?v=20260608-lightbox"></script>
+    <script src="script.js?v=20260612-workflow-pager"></script>
   </body>
 </html>
 
