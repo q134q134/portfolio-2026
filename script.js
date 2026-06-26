@@ -69,6 +69,7 @@ const youtubeVideos = {
   "ai-video-01": "zP812wop0Hs",
   "ai-video-02": "EOv4GblRy0E",
   "ai-video-03": "gqW4SvEClaY",
+  "ai-video-04": "Fxc5gSS8O-c",
   "remotion-voice": "-UAQpiIwGjY",
 };
 
@@ -155,7 +156,15 @@ const aiCards = Array.from({ length: 10 }, (_, index) => {
   };
 });
 
-const aiVideos = Array.from({ length: 3 }, (_, index) => {
+const aiVideos = [
+  {
+    src: "",
+    posterSrc: `https://i.ytimg.com/vi/${youtubeVideos["ai-video-04"]}/hqdefault.jpg`,
+    youtubeId: youtubeVideos["ai-video-04"],
+    title: "Remotion Video 02",
+    type: "Remotion",
+  },
+].concat(Array.from({ length: 3 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");
   return {
     src: `assets/ai/ai-video-${id}.mp4`,
@@ -164,7 +173,7 @@ const aiVideos = Array.from({ length: 3 }, (_, index) => {
     title: `AI Video ${id}`,
     type: "AI Motion",
   };
-}).concat([
+})).concat([
   {
     src: "assets/ai/remotion-voice.mp4",
     posterSrc: getPosterSrc("assets/ai/remotion-voice.mp4"),
